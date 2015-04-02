@@ -23,13 +23,25 @@ class Piece
     end
   end
 
-  def possible_jumped_space
-    self.possible_slide_moves.select do |position|
-      board[position] && board[position].color == opponent(color) && board[jump_space(position)].nil?
+  def possible_jump_moves
+    valid_jump_positions = []
+
+    self.possible_slide_moves.each do |position|
+      [space_one_away(position)].each do |jpos|
+        if board[position] &&
+           board[position].color == opponent(color) &&
+           board[jpos].nil?
+
+           valid_jump_positions << jpos
+
+         end
+      end
     end
+
+    valid_jump_positions
   end
 
-  def jump_space(position)
+  def space_one_away(position)
     row, col = position
     if col - self.pos.last == 1 && row > self.pos.first && col > self.pos.last
       [row + 1, col + 1]

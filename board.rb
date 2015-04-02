@@ -9,14 +9,17 @@ class Board
     place_pieces
   end
 
+  def move
+  end
+
   def perform_jump(start_pos, end_pos)
     raise 'no piece at pos' unless self[start_pos]
 
     piece = self[start_pos]
 
-    if self[piece.jump_space(end_pos)].nil?
+    if piece.possible_jump_moves.include?(end_pos)
       piece.pos = end_pos
-      self[piece.possible_jumped_space] = nil
+      self[space_between(start_pos, end_pos)] = nil
       self[start_pos] = nil
       self[end_pos] = piece
     else
@@ -65,35 +68,40 @@ class Board
 
   private
 
+
+    def space_between(start_pos, end_pos)
+      [(start_pos.first + end_pos.first) / 2, (start_pos.last + end_pos.last) / 2]
+    end
+
     def place_pieces
 
       #black
       @grid[0][1] = Piece.new([0,1], :black, self)
-      @grid[0][3] = Piece.new([0,1], :black, self)
-      @grid[0][5] = Piece.new([0,1], :black, self)
-      @grid[0][7] = Piece.new([0,1], :black, self)
-      @grid[1][0] = Piece.new([0,1], :black, self)
-      @grid[1][2] = Piece.new([0,1], :black, self)
-      @grid[1][4] = Piece.new([0,1], :black, self)
-      @grid[1][6] = Piece.new([0,1], :black, self)
-      @grid[2][1] = Piece.new([0,1], :black, self)
-      @grid[2][3] = Piece.new([0,1], :black, self)
-      @grid[2][5] = Piece.new([0,1], :black, self)
-      @grid[2][7] = Piece.new([0,1], :black, self)
+      @grid[0][3] = Piece.new([0,3], :black, self)
+      @grid[0][5] = Piece.new([0,5], :black, self)
+      @grid[0][7] = Piece.new([0,7], :black, self)
+      @grid[1][0] = Piece.new([1,0], :black, self)
+      @grid[1][2] = Piece.new([1,2], :black, self)
+      @grid[1][4] = Piece.new([1,4], :black, self)
+      @grid[1][6] = Piece.new([1,6], :black, self)
+      @grid[2][1] = Piece.new([2,1], :black, self)
+      @grid[2][3] = Piece.new([2,3], :black, self)
+      @grid[2][5] = Piece.new([2,5], :black, self)
+      @grid[2][7] = Piece.new([2,7], :black, self)
 
       #white
-      @grid[5][0] = Piece.new([0,1], :white, self)
-      @grid[5][2] = Piece.new([0,1], :white, self)
-      @grid[5][4] = Piece.new([0,1], :white, self)
-      @grid[5][6] = Piece.new([0,1], :white, self)
-      @grid[6][1] = Piece.new([0,1], :white, self)
-      @grid[6][3] = Piece.new([0,1], :white, self)
-      @grid[6][5] = Piece.new([0,1], :white, self)
-      @grid[6][7] = Piece.new([0,1], :white, self)
-      @grid[7][0] = Piece.new([0,1], :white, self)
-      @grid[7][2] = Piece.new([0,1], :white, self)
-      @grid[7][4] = Piece.new([0,1], :white, self)
-      @grid[7][6] = Piece.new([0,1], :white, self)
+      @grid[5][0] = Piece.new([5,0], :white, self)
+      @grid[5][2] = Piece.new([5,2], :white, self)
+      @grid[5][4] = Piece.new([5,4], :white, self)
+      @grid[5][6] = Piece.new([5,6], :white, self)
+      @grid[6][1] = Piece.new([6,1], :white, self)
+      @grid[6][3] = Piece.new([6,3], :white, self)
+      @grid[6][5] = Piece.new([6,5], :white, self)
+      @grid[6][7] = Piece.new([6,7], :white, self)
+      @grid[7][0] = Piece.new([7,0], :white, self)
+      @grid[7][2] = Piece.new([7,2], :white, self)
+      @grid[7][4] = Piece.new([7,4], :white, self)
+      @grid[7][6] = Piece.new([7,6], :white, self)
     end
 
     def render
