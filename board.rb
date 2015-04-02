@@ -22,7 +22,7 @@ class Board
   end
 
   def perform_jump(start_pos, end_pos)
-    raise 'no piece at pos' unless self[start_pos]
+    raise IOError.new 'No piece at position.' unless self[start_pos]
 
     piece = self[start_pos]
 
@@ -37,7 +37,7 @@ class Board
   end
 
   def perform_slide(start_pos, end_pos)
-    raise 'no piece at pos' unless self[start_pos]
+    raise IOError.new 'No piece at position.' unless self[start_pos]
 
     piece = self[start_pos]
 
@@ -55,13 +55,13 @@ class Board
   end
 
   def [](pos)
-    raise 'invalid pos' unless in_bounds?(pos)
+    raise IOError.new 'Invalid position.' unless in_bounds?(pos)
 
     @grid[pos.first][pos.last]
   end
 
   def []=(pos, value)
-    raise 'invalid pos' unless in_bounds?(pos)
+    raise IOError.new 'Invalid position.' unless in_bounds?(pos)
 
     @grid[pos.first][pos.last] = value
   end
@@ -100,32 +100,12 @@ class Board
     def place_pieces
 
       #black
-      Piece.new([0,1], :black, self)
-      Piece.new([0,3], :black, self)
-      Piece.new([0,5], :black, self)
-      Piece.new([0,7], :black, self)
-      Piece.new([1,0], :black, self)
-      Piece.new([1,2], :black, self)
-      Piece.new([1,4], :black, self)
-      Piece.new([1,6], :black, self)
-      Piece.new([2,1], :black, self)
-      Piece.new([2,3], :black, self)
-      Piece.new([2,5], :black, self)
-      Piece.new([2,7], :black, self)
+      [[0,1], [0,3], [0,5], [0,7], [1,0], [1,2], [1,4], [1,6], [2,1], [2,3], [2,5], [2,7]]
+        .each { |pos| Piece.new(pos, :black, self) }
 
       #white
-      Piece.new([5,0], :white, self)
-      Piece.new([5,2], :white, self)
-      Piece.new([5,4], :white, self)
-      Piece.new([5,6], :white, self)
-      Piece.new([6,1], :white, self)
-      Piece.new([6,3], :white, self)
-      Piece.new([6,5], :white, self)
-      Piece.new([6,7], :white, self)
-      Piece.new([7,0], :white, self)
-      Piece.new([7,2], :white, self)
-      Piece.new([7,4], :white, self)
-      Piece.new([7,6], :white, self)
+      [[5,0], [5,2], [5,4], [5,6], [6,1], [6,3], [6,5], [6,7], [7,0], [7,2], [7,4], [7,6]]
+        .each { |pos| Piece.new(pos, :white, self) }
     end
 
     def render
