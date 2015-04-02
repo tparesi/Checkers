@@ -1,3 +1,5 @@
+require 'byebug'
+
 class Piece
 
   attr_accessor :pos, :board, :king
@@ -5,10 +7,6 @@ class Piece
 
   def initialize(pos, color, board, king = false )
     @pos, @color, @board, @king = pos, color, board, king
-  end
-
-  def possible_moves
-    possible_slide_moves + possible_jump_moves
   end
 
   def possible_slide_moves
@@ -25,13 +23,9 @@ class Piece
     end
   end
 
-  def possible_jump_moves
+  def possible_jumped_space
     self.possible_slide_moves.select do |position|
-      if board[position] && board[position].color == opponent(color) && board[jump_space(position)].nil?
-        return true
-      end
-
-      false
+      board[position] && board[position].color == opponent(color) && board[jump_space(position)].nil?
     end
   end
 
@@ -60,9 +54,9 @@ class Piece
 
   def render
     if king
-      color == :white ? "\u26C1" : "\u26C3"
+      color == :white ? "◎" : "◉"
     else
-      color == :white ? "\u26C0" : "\u26C2"
+      color == :white ? "⚆" : "⚈"
     end
   end
 
