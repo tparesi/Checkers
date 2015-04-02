@@ -4,24 +4,52 @@ require 'byebug'
 
 class Board
 
-  def initialize
+  def initialize(place_new_pieces = true)
     @grid = Array.new(8) { Array.new(8) }
-    place_pieces
+    place_pieces if place_new_pieces
   end
 
   def move!(moves_array)
     if moves_array.length == 2
       move(moves_array.first, moves_array.last)
     else
-      start_pos = moves_array.shift
-      end_array = moves_array
+      dup_board = self.deep_dup
 
-      until end_array.empty?
-        next_start_pos = end_array.shift
-        move(start_pos, next_start_pos)
-        start_pos = next_start_pos
+      if valid_move_sequence?(dup_board, moves_array)
+        start_pos = moves_array.shift
+        end_array = moves_array
+
+        until end_array.empty?
+          next_start_pos = end_array.shift
+          move(start_pos, next_start_pos)
+          start_pos = next_start_pos
+        end
+
+      else
+        raise IOError.new "Invalid moves sequence"
       end
     end
+  end
+
+  def valid_move_sequence?(dup_board, moves_array)
+    return true if moves_array.empty?
+
+    if dup_board.move(moves_array[0], moves_array[1]) == false
+      return false
+    else
+      moves_array.shift
+      valid_move_sequence?(dup_board, moves_array)
+    end
+  end
+
+  def deep_dup
+    new_board = Board.new(false)
+
+    all_pieces.each do |piece|
+      new_board[piece.pos] = Piece.new(piece.pos, piece.color, new_board, piece.king)
+    end
+
+    new_board
   end
 
   def move(start_pos, end_pos)
@@ -33,6 +61,8 @@ class Board
       perform_jump(start_pos, end_pos)
     elsif piece.possible_slide_moves.include?(end_pos)
       perform_slide(start_pos, end_pos)
+    else
+      return false
     end
 
     piece.king = true if self[end_pos].maybe_promote?
