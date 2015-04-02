@@ -26,7 +26,13 @@ class Piece
   end
 
   def possible_jump_moves
+    self.possible_slide_moves.select do |position|
+      if board[position].color == opponent(color) && board.position.nil?
+        return true
+      end
 
+      false
+    end
 
   end
 
@@ -45,5 +51,11 @@ class Piece
       color == :white ? "\u26C0" : "\u26C2"
     end
   end
+
+  private
+
+    def opponent[color]
+      color == :white ? :black : :white
+    end
 
 end
