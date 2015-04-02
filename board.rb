@@ -11,18 +11,35 @@ class Board
     puts render
   end
 
+  def [](pos)
+    raise 'invalid pos' unless in_bounds?(pos)
+
+    @grid[pos.first][pos.last]
+  end
+
+  def []=(pos, value)
+    raise 'invalid pos' unless in_bounds?(pos)
+
+    @grid[pos.first][pos.last] = value
+  end
+
+  def in_bounds?(pos)
+    x, y = pos
+    x.between?(0, 7) && y.between?(0, 7)
+  end
+
   private
 
     def render
-      background = :gray
+      background = :red
       nums = ("1".."8").to_a
 
       "   " + ('a'..'h').to_a.join("  ") + "\n" +
       @grid.map do |row|
-        background == :red ? background = :gray : background = :red
+        background == :red ? background = :white : background = :red
 
         (nums.shift + " ") + row.map do |piece|
-          background == :red ? background = :gray : background = :red
+          background == :red ? background = :white : background = :red
 
           if piece.nil?
             ("   ").colorize(:background => background)

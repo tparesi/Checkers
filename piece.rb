@@ -7,6 +7,7 @@ class Piece
   end
 
   def perform_slide
+    
 
   end
 
