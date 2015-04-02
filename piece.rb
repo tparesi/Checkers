@@ -27,25 +27,33 @@ class Piece
 
   def possible_jump_moves
     self.possible_slide_moves.select do |position|
-      if board[position].color == opponent(color) && board.position.nil?
+      if board[position] && board[position].color == opponent(color) && board[jump_space(position)].nil?
         return true
       end
 
       false
     end
-
   end
 
-  def move_diffs
-
+  def jump_space(position)
+    row, col = position
+    if col - self.pos.last == 1 && row > self.pos.first && col > self.pos.last
+      [row + 1, col + 1]
+    elsif col - self.pos.last == -1 && row < self.pos.first && col < self.pos.last
+      [row - 1, col - 1]
+    elsif col - self.pos.last == -1 && row > self.pos.first && col < self.pos.last
+      [row + 1, col - 1]
+    elsif col - self.pos.last == 1 && row < self.pos.first && col > self.pos.last
+      [row - 1, col + 1]
+    end
   end
 
   def maybe_promote?
-
+  #  if color == :
   end
 
   def render
-    if piece.king
+    if king
       color == :white ? "\u26C1" : "\u26C3"
     else
       color == :white ? "\u26C0" : "\u26C2"
@@ -54,7 +62,7 @@ class Piece
 
   private
 
-    def opponent[color]
+    def opponent(color)
       color == :white ? :black : :white
     end
 
