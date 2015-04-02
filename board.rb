@@ -7,6 +7,18 @@ class Board
     @grid = Array.new(8) { Array.new(8) }
   end
 
+  def perform_slide(start_pos, end_pos)
+    raise 'no piece at pos' unless @grid[start_pos]
+
+    piece = @grid[start_pos]
+
+    if piece.possible_moves.include?(end_pos)
+      piece.pos = end_pos
+      @grid[start_pos] = nil
+      @grid[end_pos] = piece
+    end
+  end
+
   def display
     puts render
   end

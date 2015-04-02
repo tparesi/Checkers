@@ -7,15 +7,26 @@ class Piece
     @pos, @color, @board, @king = pos, color, board, king
   end
 
-  def perform_slide
-    if color == :black
-      [[row + 1, col - 1], [row + 1, col + 1]]
-    elsif color == :white
-      [[row - 1, col - 1], [row - 1, col + 1]]
+  def possible_moves
+    possible_slide_moves + possible_jump_moves
+  end
+
+  def possible_slide_moves
+    row, col = pos
+
+    if king
+      [[row - 1, col - 1], [row - 1, col + 1], [row + 1, col - 1], [row + 1, col + 1]]
+    else
+      if color == :black
+        [[row + 1, col - 1], [row + 1, col + 1]]
+      elsif color == :white
+        [[row - 1, col - 1], [row - 1, col + 1]]
+      end
     end
   end
 
-  def perform_jump
+  def possible_jump_moves
+
 
   end
 
