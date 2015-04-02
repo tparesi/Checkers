@@ -7,6 +7,7 @@ class Piece
 
   def initialize(pos, color, board, king = false )
     @pos, @color, @board, @king = pos, color, board, king
+    @board[@pos] = self
   end
 
   def possible_slide_moves
@@ -57,7 +58,7 @@ class Piece
   def maybe_promote?
     if color == :black && pos.first == 7
       return true
-    else color == :white && pos.first == 0
+    elsif color == :white && pos.first == 0
       return true
     end
 
@@ -66,9 +67,9 @@ class Piece
 
   def render
     if king
-      color == :white ? "◎" : "◉"
+      color == :white ? "☆" : "★"
     else
-      color == :white ? "⚆" : "⚈"
+      color == :white ? "◎" : "◉"
     end
   end
 
