@@ -29,7 +29,8 @@ class Piece
 
     self.possible_slide_moves.each do |position|
       [space_one_away(position)].each do |jpos|
-        if board[position] &&
+        if board.in_bounds?(jpos) &&
+           board[position] &&
            board[position].color == opponent(color) &&
            board[jpos].nil?
 

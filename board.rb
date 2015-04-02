@@ -9,7 +9,24 @@ class Board
     place_pieces
   end
 
+  def move!(moves_array)
+    if moves_array.length == 2
+      move(moves_array.first, moves_array.last)
+    else
+      start_pos = moves_array.shift
+      end_array = moves_array
+
+      until end_array.empty?
+        next_start_pos = end_array.shift
+        move(start_pos, next_start_pos)
+        start_pos = next_start_pos
+      end
+    end
+  end
+
   def move(start_pos, end_pos)
+    raise IOError.new 'No piece at position.' unless self[start_pos]
+
     piece = self[start_pos]
 
     if piece.possible_jump_moves.include?(end_pos)
@@ -22,8 +39,6 @@ class Board
   end
 
   def perform_jump(start_pos, end_pos)
-    raise IOError.new 'No piece at position.' unless self[start_pos]
-
     piece = self[start_pos]
 
     if piece.possible_jump_moves.include?(end_pos)
@@ -37,8 +52,6 @@ class Board
   end
 
   def perform_slide(start_pos, end_pos)
-    raise IOError.new 'No piece at position.' unless self[start_pos]
-
     piece = self[start_pos]
 
     if piece.possible_slide_moves.include?(end_pos)

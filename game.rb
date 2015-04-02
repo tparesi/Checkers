@@ -14,43 +14,52 @@ class Game
     player = @player1
 
     loop do
-      puts "\n#{player.name.capitalize}'s turn."
+      begin
+        puts "\n#{player.name.capitalize}'s turn. #{player.color.capitalize} pieces."
 
-      @game_board.display
+        @game_board.display
 
-      start_pos, end_pos = get_input(player)
+        moves_array = get_input(player)
 
-      @game_board.move(start_pos, end_pos)
+        @game_board.move!(moves_array)
 
+      rescue IOError => e
+        puts e.message
+        retry
+      end
+      
       player == @player1 ? player = @player2 : player = @player1
     end
   end
 
   def get_input(player)
-    begin
-      puts "#{player.name.capitalize}, where would you like to move from?"
-      start_pos = gets.chomp.split(" ")
+    puts "#{player.name.capitalize}, where would you like to move from?"
+    start_pos = gets.chomp.split("")
 
-      if start_pos.first.is_a?(Integer) && start_pos.last.is_a?(Integer)
-        raise IOError.new "Please enter two numbers with a space between each number."
-      end
-      start_pos.map! { |n| n.to_i }
+    unless Integer(start_pos.first) && Integer(start_pos.last)
+      raise IOError.new "Please enter two numbers with a space between each number."
+    end
+    start_pos.map! { |n| n.to_i }
 
-      puts "Where would you like to move to?"
-      end_pos = gets.chomp.split(" ")
+    puts "Where would you like to move to?"
+    puts "If jumping, put in each position you will jump to in order."
+    end_pos = gets.chomp.split("")
 
-      if end_pos.first.is_a?(Integer) && end_pos.last.is_a?(Integer)
-        raise IOError.new "Please enter two numbers with a space between each number."
-      end
-
-      end_pos.map! { |n| n.to_i }
-
-    rescue IOError => e
-      puts e.message
-      retry
+    unless Integer(end_pos.first) && Integer(end_pos.last)
+      raise IOError.new "Please enter two numbers with a space between each number."
     end
 
-    [start_pos, end_pos]
+    end_pos.map! { |n| n.to_i }
+
+    moves_array = [start_pos]
+
+    until end_pos.empty?
+      move = [end_pos.shift, end_pos.shift]
+      end_pos.shift
+      moves_array << move
+    end
+
+    moves_array
   end
 end
 
@@ -61,12 +70,16 @@ if __FILE__ == $PROGRAM_NAME
   else
     puts "Who is playing as white?"
     name = gets.chomp
-    player1 = Player.new(name, :white)
+    player1 = Player.new(name, :black)
 
     puts "Who is playing as black?"
     name = gets.chomp
-    player2 = Player.new(name, :black)
+    player2 = Player.new(name, :white)
 
     Game.new(player1, player2)
   end
 end
+
+
+# g = Game.new(Player.new("Tom", :black), Player.new("Chelsea", :white))
+# g = Game.new(tom, chelsea)
