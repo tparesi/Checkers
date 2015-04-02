@@ -49,7 +49,13 @@ class Piece
   end
 
   def maybe_promote?
-  #  if color == :
+    if color == :black && pos.first == 7
+      return true
+    else color == :white && pos.first == 0
+      return true
+    end
+
+    false
   end
 
   def render
