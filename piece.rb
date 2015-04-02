@@ -10,6 +10,10 @@ class Piece
     @board[@pos] = self
   end
 
+  def all_moves
+    possible_slide_moves + possible_jump_moves
+  end
+
   def possible_slide_moves
     row, col = pos
 

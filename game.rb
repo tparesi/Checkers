@@ -10,57 +10,73 @@ class Game
     play
   end
 
-  def play
-    player = @player1
+  private
 
-    loop do
-      begin
-        puts "\n#{player.name.capitalize}'s turn. #{player.color.capitalize} pieces."
+    def play
+      player = @player1
 
-        @game_board.display
+      until won?(player)
+        begin
+          puts "\n#{player.name.capitalize}'s turn. #{player.color.capitalize} pieces."
 
-        moves_array = get_input(player)
+          @game_board.display
 
-        @game_board.move!(moves_array)
+          moves_array = get_input(player)
 
-      rescue IOError => e
-        puts e.message
-        retry
+          @game_board.move!(moves_array)
+
+        rescue IOError => e
+          puts e.message
+          retry
+        end
+
+        player == @player1 ? player = @player2 : player = @player1
       end
-      
-      player == @player1 ? player = @player2 : player = @player1
-    end
-  end
-
-  def get_input(player)
-    puts "#{player.name.capitalize}, where would you like to move from?"
-    start_pos = gets.chomp.split("")
-
-    unless Integer(start_pos.first) && Integer(start_pos.last)
-      raise IOError.new "Please enter two numbers with a space between each number."
-    end
-    start_pos.map! { |n| n.to_i }
-
-    puts "Where would you like to move to?"
-    puts "If jumping, put in each position you will jump to in order."
-    end_pos = gets.chomp.split("")
-
-    unless Integer(end_pos.first) && Integer(end_pos.last)
-      raise IOError.new "Please enter two numbers with a space between each number."
     end
 
-    end_pos.map! { |n| n.to_i }
+    def won?(player)
+      return true if @game_board.pieces(opponent(player.color)).empty?
 
-    moves_array = [start_pos]
+      if @game_board.pieces(opponent(player.color)).all? { |piece| piece.all_moves.empty? }
+        return true
+      end
 
-    until end_pos.empty?
-      move = [end_pos.shift, end_pos.shift]
-      end_pos.shift
-      moves_array << move
+      false
     end
 
-    moves_array
-  end
+    def opponent(color)
+      color == :white ? :black : :white
+    end
+
+    def get_input(player)
+      puts "#{player.name.capitalize}, where would you like to move from?"
+      start_pos = gets.chomp.split("")
+
+      unless Integer(start_pos.first) && Integer(start_pos.last)
+        raise IOError.new "Please enter two numbers with a space between each number."
+      end
+      start_pos.map! { |n| n.to_i }
+
+      puts "Where would you like to move to?"
+      puts "If jumping, put in each position you will jump to in order."
+      end_pos = gets.chomp.split("")
+
+      unless Integer(end_pos.first) && Integer(end_pos.last)
+        raise IOError.new "Please enter two numbers with a space between each number."
+      end
+
+      end_pos.map! { |n| n.to_i }
+
+      moves_array = [start_pos]
+
+      until end_pos.empty?
+        move = [end_pos.shift, end_pos.shift]
+        end_pos.shift
+        moves_array << move
+      end
+
+      moves_array
+    end
 end
 
 if __FILE__ == $PROGRAM_NAME

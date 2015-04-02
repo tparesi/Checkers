@@ -9,47 +9,39 @@ class Board
     place_pieces if place_new_pieces
   end
 
+  def perform_moves(moves_array)
+    dup_board = self.deep_dup
+
+    if valid_move_sequence?(dup_board, moves_array)
+      move!(moves_array)
+    else
+      raise IOError.new "Invalid moves sequence."
+    end
+  end
+
   def move!(moves_array)
     if moves_array.length == 2
       move(moves_array.first, moves_array.last)
     else
-      dup_board = self.deep_dup
+      start_pos = moves_array.shift
+      end_array = moves_array
 
-      if valid_move_sequence?(dup_board, moves_array)
-        start_pos = moves_array.shift
-        end_array = moves_array
-
-        until end_array.empty?
-          next_start_pos = end_array.shift
-          move(start_pos, next_start_pos)
-          start_pos = next_start_pos
-        end
-
-      else
-        raise IOError.new "Invalid moves sequence"
+      until end_array.empty?
+        next_start_pos = end_array.shift
+        move(start_pos, next_start_pos)
+        start_pos = next_start_pos
       end
     end
   end
 
   def valid_move_sequence?(dup_board, moves_array)
-    return true if moves_array.empty?
+    return true if moves_array.length == 1
 
-    if dup_board.move(moves_array[0], moves_array[1]) == false
+    if dup_board.move(moves_array.shift, moves_array[0]) == false
       return false
     else
-      moves_array.shift
       valid_move_sequence?(dup_board, moves_array)
     end
-  end
-
-  def deep_dup
-    new_board = Board.new(false)
-
-    all_pieces.each do |piece|
-      new_board[piece.pos] = Piece.new(piece.pos, piece.color, new_board, piece.king)
-    end
-
-    new_board
   end
 
   def move(start_pos, end_pos)
@@ -118,23 +110,25 @@ class Board
     display
   end
 
+  def deep_dup
+    new_board = Board.new(false)
+
+    all_pieces.each do |piece|
+      new_board[piece.pos] = Piece.new(piece.pos, piece.color, new_board, piece.king)
+    end
+
+    new_board
+  end
+
+  def pieces(color)
+    all_pieces.select { |piece| piece.color == color }
+  end
+
   private
 
     def all_pieces
       @grid.flatten.compact
     end
-
-    def pieces(color)
-      all_pieces.select { |piece| piece.color == color }
-    end
-
-    # A Player must jump if they can. Put in feature later.
-    #
-    # def force_jump?(color)
-    #   pieces(color).any? do |piece|
-    #     piece.possible_jump_moves.count > 0
-    #   end
-    # end
 
     def space_between(start_pos, end_pos)
       [(start_pos.first + end_pos.first) / 2, (start_pos.last + end_pos.last) / 2]
@@ -171,5 +165,4 @@ class Board
         end.join("")
       end.join("\n")
     end
-
 end
