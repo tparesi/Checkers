@@ -11,53 +11,38 @@ class Board
 
   def perform_moves(moves_array)
     dup_board = self.deep_dup
+    dup_moves_array = moves_array.dup
+    real_moves_array = moves_array.dup
 
-    if valid_move_sequence?(dup_board, moves_array)
-      move!(moves_array)
+    if dup_board.perform_moves!(dup_moves_array)
+      perform_moves!(real_moves_array)
     else
       raise IOError.new "Invalid moves sequence."
     end
+
+    self[moves_array.last].king = true if self[moves_array.last].maybe_promote?
   end
 
-  def move!(moves_array)
-    if moves_array.length == 2
-      move(moves_array.first, moves_array.last)
+  def perform_moves!(moves_array)
+    raise IOError.new 'No piece at position.' unless self[moves_array[0]]
+
+    if moves_array.length == 2 && perform_slide(moves_array.first, moves_array.last)
+    elsif moves_array.length == 2 && perform_jump(moves_array.first, moves_array.last)
     else
       start_pos = moves_array.shift
       end_array = moves_array
 
       until end_array.empty?
         next_start_pos = end_array.shift
-        move(start_pos, next_start_pos)
-        start_pos = next_start_pos
+        if perform_jump(start_pos, next_start_pos)
+          start_pos = next_start_pos
+        else
+          return false
+        end
       end
     end
-  end
 
-  def valid_move_sequence?(dup_board, moves_array)
-    return true if moves_array.length == 1
-
-    if dup_board.move(moves_array.shift, moves_array[0]) == false
-      return false
-    else
-      valid_move_sequence?(dup_board, moves_array)
-    end
-  end
-
-  def move(start_pos, end_pos)
-    raise IOError.new 'No piece at position.' unless self[start_pos]
-
-    piece = self[start_pos]
-
-    if piece.possible_jump_moves.include?(end_pos)
-      perform_jump(start_pos, end_pos)
-    elsif piece.possible_slide_moves.include?(end_pos)
-      perform_slide(start_pos, end_pos)
-    else
-      return false
-    end
-
-    piece.king = true if self[end_pos].maybe_promote?
+    true
   end
 
   def perform_jump(start_pos, end_pos)
@@ -68,6 +53,7 @@ class Board
       self[space_between(start_pos, end_pos)] = nil
       self[start_pos] = nil
       self[end_pos] = piece
+      return true
     else
       false
     end
@@ -80,6 +66,7 @@ class Board
       piece.pos = end_pos
       self[start_pos] = nil
       self[end_pos] = piece
+      return true
     else
       false
     end

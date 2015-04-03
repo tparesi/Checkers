@@ -23,7 +23,7 @@ class Game
 
           moves_array = get_input(player)
 
-          @game_board.move!(moves_array)
+          @game_board.perform_moves(moves_array)
 
         rescue IOError => e
           puts e.message
@@ -50,12 +50,16 @@ class Game
 
     def get_input(player)
       puts "#{player.name.capitalize}, where would you like to move from?"
-      start_pos = gets.chomp.split("")
 
+      start_pos = gets.chomp.split("")
       unless Integer(start_pos.first) && Integer(start_pos.last)
         raise IOError.new "Please enter two numbers with a space between each number."
       end
+
       start_pos.map! { |n| n.to_i }
+      unless @game_board[start_pos].nil? || @game_board[start_pos].color == player.color
+        raise IOError.new "That is not your piece. You are the  #{player.color} pieces."
+      end
 
       puts "Where would you like to move to?"
       puts "If jumping, put in each position you will jump to in order."
